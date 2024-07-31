@@ -6,14 +6,15 @@ let users = [
 ]
 
 const getAllUsers = async (req, res) => {
-    const users = User.getAll();
+    const users = await User.getAll();
 
     res.json(users);
 };
 
-const getUserById = (req, res, next) => {
+const getUserById = async (req, res, next) => {
     const userId = parseInt(req.params.id);
-    const user = users.find((u) => u.id == userId);
+    const user = await User.getById(userId);
+
     if(!user) {
         const error = new Error("Usuário não encontrado!");
         error.statusCode = 404;
@@ -22,7 +23,7 @@ const getUserById = (req, res, next) => {
     res.json(user);
 };
 
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
     const {name, email} = req.body;
     if(!name || !email) {
         return res
@@ -30,11 +31,11 @@ const createUser = (req, res) => {
         .json({error: "Nome e email são obrigatórios"});
     }
     const newUser = {
-        id: users.length + 1,
         name,
         email
     }
-    users.push(newUser);
+
+    await User.create(newUser);
     res.status(201).json(newUser);
 };
 
@@ -54,9 +55,9 @@ const updateUser = (req, res) => {
     res.json(users[userIndex]);
 }
 
-const deleteUser = (req, res) => {
+const deleteUser = async (req, res) => {
     const userId = parseInt(req.params.id);
-    users = users.filter((u) => u.id !== userId);
+    await User.deleteById(userId);
     res.json({message: "Usuário deletado com sucesso!"})
 }
 
