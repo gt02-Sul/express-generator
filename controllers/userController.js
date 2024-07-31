@@ -1,10 +1,13 @@
+const User = require("../models/User");
 
 let users = [
     {id: 1, name: "Carlos Terceiro", email: "carlos.terceiro@email.com"},
     {id: 2, name: "Natan Primeiro", email: "natan.primeiro@email.com"}
 ]
 
-const getAllUsers = (req, res) => {
+const getAllUsers = async (req, res) => {
+    const users = User.getAll();
+
     res.json(users);
 };
 
