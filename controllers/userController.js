@@ -1,9 +1,32 @@
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-let users = [
-    {id: 1, name: "Carlos Terceiro", email: "carlos.terceiro@email.com"},
-    {id: 2, name: "Natan Primeiro", email: "natan.primeiro@email.com"}
-]
+const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.getByEmail(email);
+        if (!user) {
+            return res.status(401).json({ 
+ error: 'Credenciais inválidas' });
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({
+ error: 'Credenciais inválidas' });
+        }
+
+        // Geração do token JWT
+        const token = jwt.sign({ userId: user.id, name: user.name, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.json({ token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erro no servidor' });
+    }
+};
 
 const getAllUsers = async (req, res) => {
     const users = await User.getAll();
@@ -24,7 +47,7 @@ const getUserById = async (req, res, next) => {
 };
 
 const createUser = async (req, res) => {
-    const {name, email} = req.body;
+    const {name, email, password} = req.body;
     if(!name || !email) {
         return res
         .status(400)
@@ -32,11 +55,12 @@ const createUser = async (req, res) => {
     }
     const newUser = {
         name,
-        email
+        email,
+        password
     }
 
     await User.create(newUser);
-    res.status(201).json(newUser);
+    res.status(201).json(email);
 };
 
 const updateUser = (req, res) => {
@@ -66,5 +90,6 @@ module.exports = {
     getUserById,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    login
 }
