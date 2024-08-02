@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', storeController.getAllStores);
-router.get('/:id', );
+router.get('/:id', storeController.getStoreById);
 router.post('/', );
 router.put('/:id', );
 router.delete('/:id', );
