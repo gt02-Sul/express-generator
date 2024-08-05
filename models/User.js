@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 module.exports = {
     getAll: async () => {
         const connection = await getDatabaseConnection();
-        const [ result ] = await connection.query('select * from user');
+        const [ result ] = await connection.query('select * from users');
 
         return result;
     },
@@ -50,7 +50,7 @@ module.exports = {
         const connection = await getDatabaseConnection();
         const hashedPassword = await bcrypt.hash(user.password, 10);
         const result = await connection.query(
-            `insert into user (name, email, password) values ('${user.name}', '${user.email}', '${hashedPassword}')`
+            `insert into users (name, email, password) values ('${user.name}', '${user.email}', '${hashedPassword}')`
         );
 
         return result;
