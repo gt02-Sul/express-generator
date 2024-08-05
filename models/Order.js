@@ -1,24 +1,23 @@
-const { getDatabaseConnection } = require("../utils/getDatabaseConnection");
-
-module.exports = {
-    create: async (userId) => {
-        const connection = await getDatabaseConnection();
-        const [ result ] = await connection.query(
-            'insert into orders (user_id) values (?)',
-            [userId]
-        );
-        return result;
-    },
-    addItems: async (orderId, items) => {
-        const connection = await getDatabaseConnection();
-
-        let query = 'insert into order_store_item (order_id, store_item_id, amount) values '
-        query += items.map(i => '(?, ?, ?)').join(', ')
-
-        await connection.query(
-            query,
-            items.flatMap(item => [orderId, item.id, item.amount]) 
-        );
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Order extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      Order.hasOne(models.User, { foreignKey: 'id' })
     }
-
-}
+  }
+  Order.init({
+    userId: DataTypes.NUMBER
+  }, {
+    sequelize,
+    modelName: 'Order',
+  });
+  return Order;
+};

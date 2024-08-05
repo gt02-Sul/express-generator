@@ -1,14 +1,25 @@
-const { getDatabaseConnection } = require("../utils/getDatabaseConnection");
-
-module.exports = {
-    getAll: async () => {
-        const connection = await getDatabaseConnection();
-        const [result] = await connection.query('select * from store');
-        return result;
-    },
-    getById: async (id) => {
-        const connection = await getDatabaseConnection();
-        const [result] = await connection.query('select * from store where id = ' + id);
-        return result ? result[0] : null;
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Store extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
     }
-}
+  }
+  Store.init({
+    name: DataTypes.STRING,
+    zipcode: DataTypes.STRING,
+    address: DataTypes.STRING
+  }, {
+    sequelize,
+    modelName: 'Store',
+  });
+  return Store;
+};

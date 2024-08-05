@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const { User } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -33,21 +33,24 @@ const login = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-    const users = await User.getAll();
+    const users = await User.findAll();
 
     res.json(users);
 };
 
 const getUserById = async (req, res, next) => {
     const userId = parseInt(req.params.id);
-    const user = await User.getById(userId);
+    const user = await User.findByPk(userId,);
 
     if(!user) {
         const error = new Error("Usuário não encontrado!");
         error.statusCode = 404;
-        return next(error);
+        res.json({ user:  null });
     }
-    res.json(user);
+
+    const orders = await user.getOrders();
+   
+    res.json({ ...user.toJSON(), orders });
 };
 
 const createUser = async (req, res) => {
